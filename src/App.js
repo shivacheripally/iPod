@@ -1,82 +1,110 @@
-import React from 'react';
-import './App.css';
-
-class Home extends React.Component {
-  render() {
-    return (
-      <>
-        <div className='music-genre'>
-          <h2>iPod.js</h2>
-          <div className='list'>
-            <div className='coverflow'><span>Cover Flow</span></div>
-            <div className='music'><span>Music</span></div>
-            <div className='artists'><span>Artists</span></div>
-            <div className='settings'><span>Settings</span></div>
-          </div>
-        </div>
-        <img className='bg-img' src='https://tse4.mm.bing.net/th?id=OIP.YxgHegIgLzm-QZ8v2R5zgAHaJ4&pid=Api&P=0' alt='music-mood' />
-      </>
-    );
-  }
-}
-
-class Settings extends React.Component {
-  render() {
-    return (
-      <div className='settings-comp'>
-        <h1>Settings</h1>
-        <img src='https://t4.ftcdn.net/jpg/01/13/94/83/240_F_113948390_gRY4UwSTxm2bNX8jD2oIjpEuwJPELTTr.jpg' alt='settings' />
-      </div>
-    );
-  }
-}
-
-// class  
+import Buttons from "./Buttons";
+import Display from "./Display";
+import React from "react";
+import "./styles.css";
+import ZingTouch from "zingtouch";
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-
+  constructor() {
+    super();
     this.state = {
-      homeFlag:true,
-      coverflowFlag:false,
-      musicFlag:false,
-      artistsFlag: false,
-      settingsFlag:false
-    }
+      menuItems: {
+        mainMenu: true,
+        coverFlow: false,
+        music: false,
+        games: false,
+        settings: false,
+      },
+    };
+  }
 
-    this.settingsFunc = this.settingsFunc.bind(this);
-  }
-  settingsFunc() {
-    this.setState({
-      settingsFlag: !this.state.settingsFlag,
-      homeFlag: !this.state.homeFlag
+  handleButtonClick = (e) => {
+    //This function handles the direct click on menu items in display
+    let menuList = document.querySelectorAll(".menu-item");
+    menuList.forEach((element) => {
+      if (element !== e.target) {
+        element.classList.remove("active");
+      } else {
+        element.classList.add("active");
+      }
     });
-  }
-  
+  };
+
+  navigate = () => {
+    // this function handles the navigation to a specific window
+    if (this.state.menuItems.mainMenu) {
+      let { menuItems } = this.state;
+      let nav = document.querySelector(".active").dataset.navigate;
+      for (let item in menuItems) {
+        if (nav === item) menuItems[item] = true;
+        else menuItems[item] = false;
+      }
+      this.setState({
+        menuItems,
+      });
+    }
+  };
+
+  goBack = () => {
+    // This function takes you back to the main menu on clicking the menu button
+    this.setState({
+      menuItems: {
+        mainMenu: true,
+        coverFlow: false,
+        music: false,
+        games: false,
+        settings: false,
+      },
+    });
+  };
+
+  componentDidMount = () => {
+    var myRegion = new ZingTouch.Region(
+      document.querySelector(".iPod-container")
+    );
+    var myElement = document.getElementById("wheel");
+
+    myRegion.bind(myElement, "rotate", function (e) {
+      // console.log(e.detail.distanceFromLast);
+      if (e.detail.distanceFromLast > 1.2) {
+        let menuList = document.querySelectorAll(".menu-item");
+        for (let i = 0; i < menuList.length - 1; i++) {
+          if (menuList[i].classList.contains("active")) {
+            menuList[i].classList.remove("active");
+            menuList[i + 1].classList.add("active");
+            return;
+          }
+        }
+      }
+      if (e.detail.distanceFromLast < -2) {
+        let menuList = document.querySelectorAll(".menu-item");
+        for (let i = menuList.length - 1; i > 0; i--) {
+          let isActive = menuList[i].classList.contains("active");
+          if (isActive) {
+            menuList[i].classList.remove("active");
+            menuList[i - 1].classList.add("active");
+            return;
+          }
+        }
+      }
+    });
+
+    let selectButton = document.querySelector(".select-button");
+    selectButton.addEventListener("click", this.navigate);
+
+    let menuButton = document.querySelector(".menu-button");
+    menuButton.addEventListener("click", this.goBack);
+  };
 
   render() {
-    const {homeFlag,settingsFlag} = this.state;
     return (
-      <div className="App">
-        <div className="ipod">
-          <div className='screen'>
-            {settingsFlag && <Settings />}
-            {homeFlag && <Home />}
-          </div>
-          <div className="wheel">
-            <span>MENU</span>
-            <div className='wheel-button-div'>
-              <i className="fa-solid fa-backward-fast"></i>
-              <div onClick={this.settingsFunc} className='wheel-button'></div>
-              <i className="fa-solid fa-forward-fast"></i>
-            </div>
-            <div className='play-pause'>
-              <i className="fa-solid fa-play"></i>
-              <i className="fa-solid fa-pause"></i>
-            </div>
-          </div>
-        </div>
+      <div className="iPod-container" draggable="false">
+        <Display
+          menuItems={this.state.menuItems}
+          handleButtonClick={this.handleButtonClick}
+          navigate={this.navigate}
+        />
+        <Buttons />
       </div>
     );
   }
