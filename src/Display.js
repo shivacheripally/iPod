@@ -1,22 +1,26 @@
 import React from "react";
 // import MainMenu from "./MainMenu";
+
 class Display extends React.Component {
   render() {
+    // Destructure props into variables
     let { mainMenu, coverFlow, music, games, settings } = this.props.menuItems;
     let { handleButtonClick, navigate } = this.props;
+
     return (
+      // Main display container
       <div className="display" draggable="false">
+        {/* Render the main menu if mainMenu prop is true */}
         {mainMenu && (
           <ul
             className="main-menu"
             onMouseDown={handleButtonClick}
             onMouseUp={navigate}
           >
+            {/* Main menu title */}
             <h2> iPod.js </h2>
-            <li
-              className="menu-item cover-flow active"
-              data-navigate="coverFlow"
-            >
+            {/* Main menu items */}
+            <li className="menu-item cover-flow active" data-navigate="coverFlow">
               Cover Flow
             </li>
             <li className="menu-item music" data-navigate="music">
@@ -30,6 +34,7 @@ class Display extends React.Component {
             </li>
           </ul>
         )}
+        {/* Render coverFlow image if coverFlow prop is true */}
         {coverFlow && (
           <img
             className="menu-img"
@@ -37,6 +42,7 @@ class Display extends React.Component {
             alt="menu"
           />
         )}
+        {/* Render music image if music prop is true */}
         {music && (
           <img
             className="menu-img"
@@ -44,6 +50,7 @@ class Display extends React.Component {
             alt="music"
           />
         )}
+        {/* Render games image if games prop is true */}
         {games && (
           <img
             className="menu-img"
@@ -51,6 +58,7 @@ class Display extends React.Component {
             alt="games"
           />
         )}
+        {/* Render settings image if settings prop is true */}
         {settings && (
           <img
             className="menu-img"

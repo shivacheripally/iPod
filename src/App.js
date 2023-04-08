@@ -1,10 +1,13 @@
+// Importing necessary components and libraries
 import Buttons from "./Buttons";
 import Display from "./Display";
 import React from "react";
 import "./styles.css";
 import ZingTouch from "zingtouch";
 
+// Defining the App component
 class App extends React.Component {
+  // Constructor to initialize the state
   constructor() {
     super();
     this.state = {
@@ -18,8 +21,8 @@ class App extends React.Component {
     };
   }
 
+  // Function to handle the click on menu items in the display
   handleButtonClick = (e) => {
-    //This function handles the direct click on menu items in display
     let menuList = document.querySelectorAll(".menu-item");
     menuList.forEach((element) => {
       if (element !== e.target) {
@@ -30,8 +33,8 @@ class App extends React.Component {
     });
   };
 
+  // Function to navigate to a specific window
   navigate = () => {
-    // this function handles the navigation to a specific window
     if (this.state.menuItems.mainMenu) {
       let { menuItems } = this.state;
       let nav = document.querySelector(".active").dataset.navigate;
@@ -45,8 +48,8 @@ class App extends React.Component {
     }
   };
 
+  // Function to go back to the main menu
   goBack = () => {
-    // This function takes you back to the main menu on clicking the menu button
     this.setState({
       menuItems: {
         mainMenu: true,
@@ -58,15 +61,18 @@ class App extends React.Component {
     });
   };
 
+  // Function called when the component is mounted
   componentDidMount = () => {
+    // Creating an instance of ZingTouch.Region
     var myRegion = new ZingTouch.Region(
       document.querySelector(".iPod-container")
     );
+    // Getting the wheel element
     var myElement = document.getElementById("wheel");
-
+    // Binding the 'rotate' event to the wheel element
     myRegion.bind(myElement, "rotate", function (e) {
-      // console.log(e.detail.distanceFromLast);
       if (e.detail.distanceFromLast > 1.2) {
+        // Rotating clockwise
         let menuList = document.querySelectorAll(".menu-item");
         for (let i = 0; i < menuList.length - 1; i++) {
           if (menuList[i].classList.contains("active")) {
@@ -77,6 +83,7 @@ class App extends React.Component {
         }
       }
       if (e.detail.distanceFromLast < -2) {
+        // Rotating anti-clockwise
         let menuList = document.querySelectorAll(".menu-item");
         for (let i = menuList.length - 1; i > 0; i--) {
           let isActive = menuList[i].classList.contains("active");
@@ -89,13 +96,16 @@ class App extends React.Component {
       }
     });
 
+    // Adding event listener for select button
     let selectButton = document.querySelector(".select-button");
     selectButton.addEventListener("click", this.navigate);
 
+    // Adding event listener for menu button
     let menuButton = document.querySelector(".menu-button");
     menuButton.addEventListener("click", this.goBack);
   };
 
+  // Function to render the App component
   render() {
     return (
       <div className="iPod-container" draggable="false">
